@@ -1,0 +1,330 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+
+	<!-- 
+		<script src="resources/sap-ui-core.js"
+		<script src="https://openui5.hana.ondemand.com/1.42.6/resources/sap-ui-core.js"
+		
+				id="sap-ui-bootstrap"
+				data-sap-ui-language="en"
+				data-sap-ui-xx-bindingSyntax="complex"
+				data-sap-ui-libs="sap.m,sap.ui.layout"
+				data-sap-ui-theme="sap_bluecrystal">
+		</script>
+	-->		
+
+		<script src="phonegap.js"></script>
+		<script src="resources/sap-ui-core.js"
+				id="sap-ui-bootstrap"
+				data-sap-ui-language="en"
+				data-sap-ui-xx-bindingSyntax="complex"
+				data-sap-ui-libs="sap.m,sap.ui.layout"
+				data-sap-ui-theme="sap_bluecrystal">
+		</script>
+		<!-- only load the mobile lib "sap.m" and the "sap_bluecrystal" theme -->
+		<script>			
+				sap.ui.localResources("zui5sd00e04");
+				var app = new sap.m.App({initialPage:"A001"});
+				
+				//Custom Object
+				var oNavArr	 = Array();
+				var oCon  	 = sap.ui.controller('zui5sd00e04.OCON');
+				var oFmt  	 = sap.ui.controller('zui5sd00e04.FORMATTER');
+				var oDb  	 = sap.ui.controller('zui5sd00e04.ODB');
+				var oPrint1  = sap.ui.controller('zui5sd00e04.PRINT1'); //Bluetooth
+				var oPrint2  = sap.ui.controller('zui5sd00e04.PRINT2'); //Network - Tlantic
+				var oWeight  = sap.ui.controller('zui5sd00e04.WEIGHT'); //Weight
+				var oScan    = sap.ui.controller('zui5sd00e04.SCAN');   //Scanner
+				var oApp     = sap.ui.controller('zui5sd00e04.OAPP');   //Appplication
+				var oSock    = null; //init at device ready
+				var oWei     = null; //init at device ready
+				var oCTX  	 = oCon.getCTX();
+				
+				//I18N
+				this.oLangu = new sap.ui.model.resource.ResourceModel({
+					bundleUrl 	: "translations/translation.properties",
+					bundleLocale: "th"});
+				sap.ui.getCore().setModel(this.oLangu, "i18n");
+
+
+				//Menu
+				app.addPage(sap.ui.view({id:"A001", viewName:"zui5sd00e04.view.A.A001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"A002", viewName:"zui5sd00e04.view.A.A002", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"A003", viewName:"zui5sd00e04.view.A.A003", type:sap.ui.core.mvc.ViewType.JS}));
+
+				//Good Receive
+				app.addPage(sap.ui.view({id:"B001", viewName:"zui5sd00e04.view.B.B001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"B002", viewName:"zui5sd00e04.view.B.B002", type:sap.ui.core.mvc.ViewType.JS})); 
+				app.addPage(sap.ui.view({id:"B003", viewName:"zui5sd00e04.view.B.B003", type:sap.ui.core.mvc.ViewType.JS})); 
+				app.addPage(sap.ui.view({id:"B004", viewName:"zui5sd00e04.view.B.B004", type:sap.ui.core.mvc.ViewType.JS})); 
+				app.addPage(sap.ui.view({id:"B101", viewName:"zui5sd00e04.view.B.B101", type:sap.ui.core.mvc.ViewType.JS}));  
+				app.addPage(sap.ui.view({id:"B102", viewName:"zui5sd00e04.view.B.B102", type:sap.ui.core.mvc.ViewType.JS}));  
+				app.addPage(sap.ui.view({id:"B103", viewName:"zui5sd00e04.view.B.B103", type:sap.ui.core.mvc.ViewType.JS})); 
+				app.addPage(sap.ui.view({id:"B104", viewName:"zui5sd00e04.view.B.B104", type:sap.ui.core.mvc.ViewType.JS})); 
+				
+				//Premix Order
+				app.addPage(sap.ui.view({id:"C101", viewName:"zui5sd00e04.view.C.C101", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"C102", viewName:"zui5sd00e04.view.C.C102", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"C103", viewName:"zui5sd00e04.view.C.C103", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"C104", viewName:"zui5sd00e04.view.C.C104", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"C201", viewName:"zui5sd00e04.view.C.C201", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"C301", viewName:"zui5sd00e04.view.C.C301", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"C303", viewName:"zui5sd00e04.view.C.C303", type:sap.ui.core.mvc.ViewType.JS}));
+				
+				//Ingredient Transfer Order
+				app.addPage(sap.ui.view({id:"D103", viewName:"zui5sd00e04.view.D.D103", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D201", viewName:"zui5sd00e04.view.D.D201", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D202", viewName:"zui5sd00e04.view.D.D202", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D203", viewName:"zui5sd00e04.view.D.D203", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D204", viewName:"zui5sd00e04.view.D.D204", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D301", viewName:"zui5sd00e04.view.D.D301", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D401", viewName:"zui5sd00e04.view.D.D401", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D402", viewName:"zui5sd00e04.view.D.D402", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D403", viewName:"zui5sd00e04.view.D.D403", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D404", viewName:"zui5sd00e04.view.D.D404", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D405", viewName:"zui5sd00e04.view.D.D405", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D406", viewName:"zui5sd00e04.view.D.D406", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D501", viewName:"zui5sd00e04.view.D.D501", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D502", viewName:"zui5sd00e04.view.D.D502", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D503", viewName:"zui5sd00e04.view.D.D503", type:sap.ui.core.mvc.ViewType.JS}));	// ++ 2017.12.28 : TFR Non-PRD V.1.4
+				app.addPage(sap.ui.view({id:"D601", viewName:"zui5sd00e04.view.D.D601", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D701", viewName:"zui5sd00e04.view.D.D701", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D702", viewName:"zui5sd00e04.view.D.D702", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D703", viewName:"zui5sd00e04.view.D.D703", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"D704", viewName:"zui5sd00e04.view.D.D704", type:sap.ui.core.mvc.ViewType.JS}));	// ++ 2017.12.28 : TFR Other Plant V.1.5
+				app.addPage(sap.ui.view({id:"D801", viewName:"zui5sd00e04.view.D.D801", type:sap.ui.core.mvc.ViewType.JS}));
+				
+				//Picking
+				app.addPage(sap.ui.view({id:"E101", viewName:"zui5sd00e04.view.E.E101", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E102", viewName:"zui5sd00e04.view.E.E102", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E103", viewName:"zui5sd00e04.view.E.E103", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E104", viewName:"zui5sd00e04.view.E.E104", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E105", viewName:"zui5sd00e04.view.E.E105", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E201", viewName:"zui5sd00e04.view.E.E201", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E202", viewName:"zui5sd00e04.view.E.E202", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E301", viewName:"zui5sd00e04.view.E.E301", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E302", viewName:"zui5sd00e04.view.E.E302", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E303", viewName:"zui5sd00e04.view.E.E303", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E304", viewName:"zui5sd00e04.view.E.E304", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E305", viewName:"zui5sd00e04.view.E.E305", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E306", viewName:"zui5sd00e04.view.E.E306", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E307", viewName:"zui5sd00e04.view.E.E307", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E308", viewName:"zui5sd00e04.view.E.E308", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E401", viewName:"zui5sd00e04.view.E.E401", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E402", viewName:"zui5sd00e04.view.E.E402", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E403", viewName:"zui5sd00e04.view.E.E403", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E404", viewName:"zui5sd00e04.view.E.E404", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E405", viewName:"zui5sd00e04.view.E.E405", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E501", viewName:"zui5sd00e04.view.E.E501", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E502", viewName:"zui5sd00e04.view.E.E502", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E503", viewName:"zui5sd00e04.view.E.E503", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E504", viewName:"zui5sd00e04.view.E.E504", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E505", viewName:"zui5sd00e04.view.E.E505", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E506", viewName:"zui5sd00e04.view.E.E506", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E507", viewName:"zui5sd00e04.view.E.E507", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E601", viewName:"zui5sd00e04.view.E.E601", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E602", viewName:"zui5sd00e04.view.E.E602", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E701", viewName:"zui5sd00e04.view.E.E701", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E702", viewName:"zui5sd00e04.view.E.E702", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E801", viewName:"zui5sd00e04.view.E.E801", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E802", viewName:"zui5sd00e04.view.E.E802", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E803", viewName:"zui5sd00e04.view.E.E803", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"E808", viewName:"zui5sd00e04.view.E.E808", type:sap.ui.core.mvc.ViewType.JS}));
+				
+				//Weight
+				app.addPage(sap.ui.view({id:"F001", viewName:"zui5sd00e04.view.F.F001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"F002", viewName:"zui5sd00e04.view.F.F002", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"F101", viewName:"zui5sd00e04.view.F.F101", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"F102", viewName:"zui5sd00e04.view.F.F102", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"F301", viewName:"zui5sd00e04.view.F.F301", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"F401", viewName:"zui5sd00e04.view.F.F401", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"F402", viewName:"zui5sd00e04.view.F.F402", type:sap.ui.core.mvc.ViewType.JS}));
+			
+				
+				//Back-flush
+				app.addPage(sap.ui.view({id:"G001", viewName:"zui5sd00e04.view.G.G001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"G002", viewName:"zui5sd00e04.view.G.G002", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"G003", viewName:"zui5sd00e04.view.G.G003", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"G004", viewName:"zui5sd00e04.view.G.G004", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"G005", viewName:"zui5sd00e04.view.G.G005", type:sap.ui.core.mvc.ViewType.JS}));
+				
+				//Transfer to Production
+				app.addPage(sap.ui.view({id:"H001", viewName:"zui5sd00e04.view.H.H001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"H002", viewName:"zui5sd00e04.view.H.H002", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"H003", viewName:"zui5sd00e04.view.H.H003", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"H101", viewName:"zui5sd00e04.view.H.H101", type:sap.ui.core.mvc.ViewType.JS}));
+
+				//Preparing Confirmation - Confirm-In
+				app.addPage(sap.ui.view({id:"I001", viewName:"zui5sd00e04.view.I.I001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I002", viewName:"zui5sd00e04.view.I.I002", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I003", viewName:"zui5sd00e04.view.I.I003", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I005", viewName:"zui5sd00e04.view.I.I005", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I006", viewName:"zui5sd00e04.view.I.I006", type:sap.ui.core.mvc.ViewType.JS}));	// ++ 2018.11.05 :: Input Confirm - PREP V1.0.0
+				//Preparing Confirmation - Confirm-out
+				app.addPage(sap.ui.view({id:"I101", viewName:"zui5sd00e04.view.I.I101", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I102", viewName:"zui5sd00e04.view.I.I102", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I103", viewName:"zui5sd00e04.view.I.I103", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I104", viewName:"zui5sd00e04.view.I.I104", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I105", viewName:"zui5sd00e04.view.I.I105", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I106", viewName:"zui5sd00e04.view.I.I106", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I107", viewName:"zui5sd00e04.view.I.I107", type:sap.ui.core.mvc.ViewType.JS}));
+				//Confirmation Overview
+				app.addPage(sap.ui.view({id:"I201", viewName:"zui5sd00e04.view.I.I201", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I202", viewName:"zui5sd00e04.view.I.I202", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I203", viewName:"zui5sd00e04.view.I.I203", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I204", viewName:"zui5sd00e04.view.I.I204", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I205", viewName:"zui5sd00e04.view.I.I205", type:sap.ui.core.mvc.ViewType.JS}));	// ++ 2018.11.15 :: Confirmation Overview V1.3.0
+				app.addPage(sap.ui.view({id:"I206", viewName:"zui5sd00e04.view.I.I206", type:sap.ui.core.mvc.ViewType.JS}));	// ++ 2018.11.15 :: Confirmation Overview V1.3.0
+				//Cooking Confirmation - Confirm-in																				// ++ 2018.11.12 :: Input Confirm - COOK V1.0.0
+				app.addPage(sap.ui.view({id:"I302", viewName:"zui5sd00e04.view.I.I302", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I303", viewName:"zui5sd00e04.view.I.I303", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I306", viewName:"zui5sd00e04.view.I.I306", type:sap.ui.core.mvc.ViewType.JS}));
+				//Cooking Confirmation - Confirm-out																			// ++ 2018.11.12 :: Input Confirm - COOK V1.0.0				
+				app.addPage(sap.ui.view({id:"I403", viewName:"zui5sd00e04.view.I.I403", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I404", viewName:"zui5sd00e04.view.I.I404", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I405", viewName:"zui5sd00e04.view.I.I405", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I406", viewName:"zui5sd00e04.view.I.I406", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"I407", viewName:"zui5sd00e04.view.I.I407", type:sap.ui.core.mvc.ViewType.JS}));
+				
+				//Sticker
+				app.addPage(sap.ui.view({id:"K001", viewName:"zui5sd00e04.view.K.K001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K002", viewName:"zui5sd00e04.view.K.K002", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K003", viewName:"zui5sd00e04.view.K.K003", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K004", viewName:"zui5sd00e04.view.K.K004", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K005", viewName:"zui5sd00e04.view.K.K005", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K006", viewName:"zui5sd00e04.view.K.K006", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K007", viewName:"zui5sd00e04.view.K.K007", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K008", viewName:"zui5sd00e04.view.K.K008", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K101", viewName:"zui5sd00e04.view.K.K101", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K102", viewName:"zui5sd00e04.view.K.K102", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K103", viewName:"zui5sd00e04.view.K.K103", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"K104", viewName:"zui5sd00e04.view.K.K104", type:sap.ui.core.mvc.ViewType.JS}));
+				
+				//GR to Process Order
+				app.addPage(sap.ui.view({id:"L001", viewName:"zui5sd00e04.view.L.L001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"L002", viewName:"zui5sd00e04.view.L.L002", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"L003", viewName:"zui5sd00e04.view.L.L003", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"L101", viewName:"zui5sd00e04.view.L.L101", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"L102", viewName:"zui5sd00e04.view.L.L102", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"L103", viewName:"zui5sd00e04.view.L.L103", type:sap.ui.core.mvc.ViewType.JS}));
+				
+				//Putaway & Movebin
+				app.addPage(sap.ui.view({id:"M001", viewName:"zui5sd00e04.view.M.M001", type:sap.ui.core.mvc.ViewType.JS}));
+				app.addPage(sap.ui.view({id:"M101", viewName:"zui5sd00e04.view.M.M101", type:sap.ui.core.mvc.ViewType.JS}));
+				
+				app.placeAt("content");
+				
+				//Initialize
+				oCon.ui5DispatchFcode("INITIALIZE");
+				document.addEventListener("deviceready", oCon.onDeviceReady, false);
+				
+		</script>
+		<style>
+			.sapMInputBaseInner{  
+  				opacity: 1.0;
+			}
+			.sapMInputBaseInner.sapMInputBaseReadonlyInner {
+				border: 1px solid #bfbfbf;
+				background-color: #eeeeee;
+			}
+			.sapMInput.sapMInputBase.sapMInputBaseDisabled {
+				background-color: transparent;
+		  		opacity: 1.0;
+		  		pointer-events: none;
+			}
+			.sapMInputBaseInner.sapMInputBaseReadonlyInner.sapMInputBaseStateInner.sapMInputBaseWarningInner{
+				border: 1px solid #f0ab00;
+			}
+			.sapMText.sapMTextMaxWidth.sapUiSelectable.size5 {
+  				font-size : 5rem;
+			}
+			.sapMText.sapMTextMaxWidth.sapUiSelectable.size4 {
+  				font-size : 4rem;
+  			}
+			.sapMText.sapMTextMaxWidth.sapUiSelectable.size3 {
+  				font-size : 3rem;
+			}
+			.sapMText.sapMTextMaxWidth.sapUiSelectable.size2 {
+  				font-size : 2rem;
+			}
+			.sapMBtn.h300{
+			    height: 300%;
+       			width: 230%;
+       			border-radius: 20%;
+			}
+			.sapMText.sapMTextMaxWidth.sapUiSelectable.Wei4Nok {
+				color : #E08283;
+  				font-size : 4rem;
+  			}
+			.sapMText.sapMTextMaxWidth.sapUiSelectable.Wei4Ok {
+				color : #1BA39C;
+  				font-size : 4rem;
+  			}
+  			.sapMText.sapMTextMaxWidth.sapUiSelectable.Wei2Nok {
+				color : #E08283;
+  				font-size : 2rem;
+  			}
+  			.sapMText.sapMTextMaxWidth.sapUiSelectable.Wei2Ok {
+				color : #1BA39C;
+  				font-size : 2rem;
+  			}
+  			.N.sapMLIB.sapMLIB-CTX.sapMLIBActionable.sapMLIBFocusable.sapMLIBHoverable.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMListTblRow{
+  				background-color: #d2d7d3;
+  			}
+  			.D.sapMLIB.sapMLIB-CTX.sapMLIBActionable.sapMLIBFocusable.sapMLIBHoverable.sapMLIBShowSeparator.sapMLIBTypeInactive.sapMListTblRow{
+  				background-color: #e67e22;
+  			}
+  			.sapMObjectIdentifierTitle.sapMText{
+  				font-weight: normal;
+  			}
+  			.sapMListHdr{
+  				font-size : 0.8rem;
+    			font-weight: bold;		/* 2018-02-01 */ 
+  			}
+  			
+  			
+  			/* 2017-11-23 */  			
+  			#b103inpDiffQty-inner.sapMInputBaseInner {  /* Diff Textbox :: Red font, Bold Text */
+  				color: #f31515;
+  				font-weight: bold;
+  			}
+  			#b103lblDiffQty.sapMLabel {  /* Diff Label :: Red font, Bold Text */
+  				color: #f31515;
+  				font-weight: bold;
+  			} 
+  			
+  			
+  			/* 2018-02-26 :: Set status of GR */  
+  			.sapMObjStatusSuccess>.sapMObjStatusText { 
+  				color: #04B404;
+  				font-weight: bold;  				
+  			}
+  			.sapMObjStatusSuccess>.sapMObjStatusTitle {
+			    padding-right: .25rem;
+			    display: block;
+			    padding-bottom: 0.46rem;
+			    font-weight: bold; 
+			    color: #333333;
+			    word-wrap: break-word; 		/* 2018-06-07 */
+    			max-width: 6rem;			/* Determine line-break with max width of docnum */
+			} 
+  			.sapMObjStatusWarning>.sapMObjStatusTitle {
+			    padding-right: .25rem;
+			    display: block;
+			    padding-bottom: 0.46rem;
+			    font-weight: bold; 
+			    color: #333333;
+			    word-wrap: break-word; 		/* 2018-06-07 */
+    			max-width: 6rem;			/* Determine line-break with max width of docnum */
+			} 
+  			
+  			
+		</style>
+	</head>
+	<body class="sapUiBody" role="application">
+		<div id="content"></div>
+	</body>
+</html>
