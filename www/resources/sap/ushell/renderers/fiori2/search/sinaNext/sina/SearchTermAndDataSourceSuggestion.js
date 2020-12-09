@@ -1,1 +1,0 @@
-sinaDefine(['../core/core','./SearchTermSuggestion','./SuggestionType'],function(c,S,a){"use strict";return S.derive({type:a.SearchTermAndDataSource,_meta:{properties:{dataSource:{required:true}}}});});
